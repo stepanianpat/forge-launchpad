@@ -37,10 +37,13 @@
         const userInput = document.getElementById('userInput');
         const resultsDiv = document.getElementById('results');
         const loadingIndicator = document.getElementById('loadingIndicator');
+        
+        const apiEndpoint = 'https://forge-launchpad.vercel.app/api/getInsight';
 
-        submitButton.addEventListener('click', () => {
+        submitButton.addEventListener('click', async () => {
             const query = userInput.value;
-            resultsDiv.textContent = '';
+            resultsDiv.textContent = ''; 
+            resultsDiv.classList.remove('error'); 
             
             if (!query.trim()) {
                 resultsDiv.textContent = 'Please enter a query.';
@@ -48,11 +51,40 @@
             }
             
             loadingIndicator.classList.remove('hidden');
-            
-            setTimeout(() => {
-                resultsDiv.textContent = `You asked for insights on: "${query}" (Actual AI response will go here).`;
+            submitButton.disabled = true; 
+
+            try {
+                const response = await fetch(apiEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query }),
+                });
+
                 loadingIndicator.classList.add('hidden');
-            }, 1000); 
+                submitButton.disabled = false; 
+
+                if (!response.ok) {
+                    let errorMsg = `Error: ${response.status} ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMsg = errorData.error || errorMsg;
+                    } catch (e) {
+                    }
+                    throw new Error(errorMsg);
+                }
+
+                const data = await response.json();
+                resultsDiv.textContent = data.message || `Received: ${data.originalQuery}`; 
+
+            } catch (error) {
+                console.error('Failed to fetch insight:', error);
+                resultsDiv.textContent = `Failed to get insight. ${error.message}`;
+                resultsDiv.classList.add('error');
+                loadingIndicator.classList.add('hidden');
+                submitButton.disabled = false;
+            }
         });
     </script>
 </body>
