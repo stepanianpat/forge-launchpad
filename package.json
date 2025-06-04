@@ -1,0 +1,23 @@
+{
+  "name": "insight-calc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stepanianpat/forge-launchpad.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stepanianpat/forge-launchpad/issues"
+  },
+  "homepage": "https://github.com/stepanianpat/forge-launchpad#readme",
+  "dependencies": {
+    "openai": "^5.1.0"
+  }
+}
