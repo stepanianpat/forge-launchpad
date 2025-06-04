@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Insight Calculator</title> {/* We'll change this title for each micro-company */}
+    <style>
+        /* Basic styling - we can expand this or move to a separate CSS file later */
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
+        .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        input[type="text"] { width: calc(100% - 22px); padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px; }
+        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        #results { margin-top: 20px; padding: 10px; background-color: #e9ecef; border-radius: 4px; min-height: 50px; }
+        .hidden { display: none; } /* For loading indicators or messages */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Insight Calculator</h1> {/* We'll change this H1 for each micro-company */}
+        
+        <label for="userInput">Enter your query:</label> {/* We'll change this label text */}
+        <input type="text" id="userInput" placeholder="e.g., 'Best SEO title for a bakery in Dallas'"> {/* We'll change placeholder */}
+        
+        <button id="submitButton">Get Insight</button>
+        
+        <div id="loadingIndicator" class="hidden">Loading...</div>
+        
+        <h2>Results:</h2>
+        <div id="results">
+            {/* AI-generated insights will appear here */}
+        </div>
+    </div>
+
+    <script>
+        // JavaScript will go here
+        // 1. Get references to the button, input field, results div, loading indicator
+        const submitButton = document.getElementById('submitButton');
+        const userInput = document.getElementById('userInput');
+        const resultsDiv = document.getElementById('results');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+
+        // 2. Add event listener to the button
+        submitButton.addEventListener('click', () => {
+            const query = userInput.value;
+            resultsDiv.textContent = ''; // Clear previous results
+            
+            if (!query.trim()) {
+                resultsDiv.textContent = 'Please enter a query.';
+                return;
+            }
+            
+            loadingIndicator.classList.remove('hidden'); // Show loading
+            
+            // For now, just simulate an AI call and display the input
+            // In the next step, this is where we'll call our serverless function
+            setTimeout(() => {
+                resultsDiv.textContent = `You asked for insights on: "${query}" (Actual AI response will go here).`;
+                loadingIndicator.classList.add('hidden'); // Hide loading
+            }, 1000); // Simulate network delay
+        });
+    </script>
+</body>
+</html>
