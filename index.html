@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI SEO Title Architect</title>
-    <!-- Link to your external CSS file -->
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
@@ -35,11 +34,11 @@
         const userInput = document.getElementById('userInput');
         const resultsDiv = document.getElementById('results');
         const loadingIndicator = document.getElementById('loadingIndicator');
-        const apiEndpoint = 'https://forge-launchpad.vercel.app/api/getInsight'; // Ensure this is your correct Vercel URL
+        const apiEndpoint = 'https://forge-launchpad.vercel.app/api/getInsight';
 
         submitButton.addEventListener('click', async () => {
             const query = userInput.value;
-            resultsDiv.innerHTML = ''; // Clear previous results, including any placeholder text
+            resultsDiv.innerHTML = '';
             resultsDiv.classList.remove('error'); 
             
             if (!query.trim()) {
@@ -66,7 +65,6 @@
 
                     try {
                         const data = JSON.parse(responseText);
-                        // Process and display titles as a list
                         if (data.message) {
                             const titles = data.message.split('\n').filter(title => title.trim() !== ''); 
 
@@ -97,7 +95,6 @@
                         const errorData = await response.json();
                         errorMsg = errorData.error ? `API Error: ${errorData.error}` : errorMsg;
                     } catch (e) {
-                        // If error response isn't JSON, use the original HTTP error message
                     }
                     throw new Error(errorMsg);
                 }

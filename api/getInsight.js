@@ -25,7 +25,7 @@ export default async function handler(request, response) {
                 messages: [
                     {
                         role: "system",
-                        content: "You are a helpful assistant that provides concise insights."
+                        content: "You are an SEO Title Generation Bot. Your SOLE task is to generate 3 to 5 SEO title suggestions based on the user's input. Each title MUST be on a new line. Do NOT include any introductory text, explanations, or conversational phrases. Only output the titles."
                     },
                     {
                         role: "user",
