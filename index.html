@@ -1,35 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Insight Calculator</title> {/* We'll change this title for each micro-company */}
-    <style>
-        body { font-family: sans-serif; margin: 20px; background-color: #f4f4f4; color: #333; }
-        .container { background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        label { display: block; margin-bottom: 8px; font-weight: bold; }
-        input[type="text"] { width: calc(100% - 22px); padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 4px; }
-        button { padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        button:hover { background-color: #0056b3; }
-        #results { margin-top: 20px; padding: 10px; background-color: #e9ecef; border-radius: 4px; min-height: 50px; }
-        .hidden { display: none; }
-    </style>
+    <title>AI SEO Title Architect</title>
+    <!-- Link to your external CSS file -->
+    <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
-    <div class="container">
-        <h1>AI Insight Calculator</h1> {/* We'll change this H1 for each micro-company */}
+    <div class="main-container">
+        <section class="hero-section">
+            <h1>AI SEO Title Architect</h1>
+            <p>Forge irresistible, click-worthy headlines that dominate search results. Unleash AI to craft your perfect SEO titles in seconds!</p>
+        </section>
+
+        <section class="form-card">
+            <label for="userInput">Enter your core topic or keywords:</label>
+            <input type="text" id="userInput" name="userInput" placeholder="e.g., 'sustainable fashion for Gen Z', 'best coffee brewing methods'">
+            
+            <button id="submitButton" aria-busy="false">Craft My Titles</button> 
+            
+            <div id="loadingIndicator" class="hidden" aria-busy="true">Architecting titles... please wait.</div>
+        </section>
         
-        <label for="userInput">Enter your query:</label> {/* We'll change this label text */}
-        <input type="text" id="userInput" placeholder="e.g., 'Best SEO title for a bakery in Dallas'"> {/* We'll change placeholder */}
-        
-        <button id="submitButton">Get Insight</button>
-        
-        <div id="loadingIndicator" class="hidden">Loading...</div>
-        
-        <h2>Results:</h2>
-        <div id="results">
-            {/* AI-generated insights will appear here */}
-        </div>
+        <section class="results-area">
+            <h3>Your Crafted SEO Titles:</h3>
+            <div id="results">
+            </div>
+        </section>
     </div>
 
     <script>
@@ -37,21 +35,21 @@
         const userInput = document.getElementById('userInput');
         const resultsDiv = document.getElementById('results');
         const loadingIndicator = document.getElementById('loadingIndicator');
-        
-        const apiEndpoint = 'https://forge-launchpad.vercel.app/api/getInsight';
+        const apiEndpoint = 'https://forge-launchpad.vercel.app/api/getInsight'; // Ensure this is your correct Vercel URL
 
         submitButton.addEventListener('click', async () => {
             const query = userInput.value;
-            resultsDiv.textContent = ''; 
+            resultsDiv.innerHTML = ''; // Clear previous results, including any placeholder text
             resultsDiv.classList.remove('error'); 
             
             if (!query.trim()) {
-                resultsDiv.textContent = 'Please enter a query.';
+                resultsDiv.textContent = 'Please enter your topic or keywords to generate titles.';
                 return;
             }
             
             loadingIndicator.classList.remove('hidden');
-            submitButton.disabled = true; 
+            submitButton.disabled = true;
+            submitButton.setAttribute('aria-busy', 'true');
 
             try {
                 const response = await fetch(apiEndpoint, {
@@ -62,28 +60,56 @@
                     body: JSON.stringify({ query: query }),
                 });
 
-                loadingIndicator.classList.add('hidden');
-                submitButton.disabled = false; 
+                if (response.ok) {
+                    const responseText = await response.text();
+                    console.log("Received raw response text:", responseText);
 
-                if (!response.ok) {
-                    let errorMsg = `Error: ${response.status} ${response.statusText}`;
+                    try {
+                        const data = JSON.parse(responseText);
+                        // Process and display titles as a list
+                        if (data.message) {
+                            const titles = data.message.split('\n').filter(title => title.trim() !== ''); 
+
+                            if (titles.length > 0) {
+                                const ul = document.createElement('ul');
+                                titles.forEach(titleText => {
+                                    const li = document.createElement('li');
+                                    li.textContent = titleText.trim();
+                                    ul.appendChild(li);
+                                });
+                                resultsDiv.appendChild(ul);
+                            } else {
+                                resultsDiv.textContent = "No titles were generated, or the response was empty.";
+                            }
+                        } else {
+                             resultsDiv.textContent = "Received an unexpected response format from the AI.";
+                        }
+
+                    } catch (parseError) {
+                        console.error("Error parsing JSON:", parseError);
+                        console.error("Text that failed to parse was:", responseText);
+                        resultsDiv.textContent = "Error: Failed to parse the server's response.";
+                        resultsDiv.classList.add('error');
+                    }
+                } else {
+                    let errorMsg = `HTTP Error: ${response.status} ${response.statusText}`;
                     try {
                         const errorData = await response.json();
-                        errorMsg = errorData.error || errorMsg;
+                        errorMsg = errorData.error ? `API Error: ${errorData.error}` : errorMsg;
                     } catch (e) {
+                        // If error response isn't JSON, use the original HTTP error message
                     }
                     throw new Error(errorMsg);
                 }
 
-                const data = await response.json();
-                resultsDiv.textContent = data.message || `Received: ${data.originalQuery}`; 
-
             } catch (error) {
-                console.error('Failed to fetch insight:', error);
-                resultsDiv.textContent = `Failed to get insight. ${error.message}`;
+                console.error('Operation failed:', error);
+                resultsDiv.textContent = `Operation failed: ${error.message}`;
                 resultsDiv.classList.add('error');
+            } finally {
                 loadingIndicator.classList.add('hidden');
                 submitButton.disabled = false;
+                submitButton.setAttribute('aria-busy', 'false');
             }
         });
     </script>

@@ -1,0 +1,198 @@
+/* Basic Reset & Dark Theme Variables */
+:root {
+    --background-color: #101425; 
+    --background-gradient-start: #1e2445; 
+    --card-background-color: #1a1f3a; 
+    --text-color: #e0e0e0; 
+    --primary-color: #6d59e4; 
+    --primary-hover-color: #5848c0;
+    --secondary-color: #2d335b; 
+    --border-radius: 8px;
+    --input-background: #252a49;
+    --input-border: #3b4068;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    --results-background-color: #202540; /* Slightly different dark for results */
+    --title-item-background: #2a2f4d; /* Background for individual title items */
+    --title-item-border: #3b4068; /* Border for individual title items */
+}
+
+html {
+    font-family: var(--font-family);
+    background-color: var(--background-color); 
+    background-image: radial-gradient(ellipse at center top, 
+                                      var(--background-gradient-start) 0%, 
+                                      var(--background-color) 60%, 
+                                      #0c0f1e 100%);
+    background-repeat: no-repeat;
+    background-attachment: fixed; 
+    color: var(--text-color);
+    line-height: 1.6;
+    min-height: 100%; 
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh; 
+    padding: 20px;
+}
+
+/* Main Content Container */
+.main-container {
+    width: 100%;
+    max-width: 650px; 
+    text-align: center;
+    padding-top: 40px;
+    position: relative; 
+    z-index: 1; 
+}
+
+/* Hero Section Styling */
+.hero-section {
+    margin-bottom: 40px;
+}
+
+.hero-section h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+.hero-section p {
+    font-size: 1.1rem;
+    color: #a0a0c0; 
+    margin-bottom: 30px;
+}
+
+/* Form Card Styling */
+.form-card {
+    background-color: var(--card-background-color);
+    padding: 30px 35px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    text-align: left; 
+    border: 1px solid var(--secondary-color);
+}
+
+.form-card label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #c0c0e0;
+}
+
+.form-card input[type="text"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--input-border);
+    background-color: var(--input-background);
+    color: var(--text-color);
+    font-size: 1rem;
+    box-sizing: border-box; 
+}
+
+.form-card input[type="text"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(109, 89, 228, 0.3);
+}
+
+.form-card button {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.form-card button:hover {
+    background-color: var(--primary-hover-color);
+}
+
+.form-card button[aria-busy="true"] {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+/* Results Area Styling */
+.results-area {
+    margin-top: 30px;
+    text-align: left;
+}
+
+.results-area h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #c0c0e0;
+    margin-bottom: 15px;
+}
+
+#results {
+    background-color: var(--results-background-color); 
+    padding: 15px 20px; /* Adjusted padding */
+    border-radius: var(--border-radius);
+    border: 1px solid var(--primary-color); 
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1); 
+    min-height: 120px; 
+    font-size: 1rem;
+    color: var(--text-color); 
+    transition: all 0.3s ease; 
+    /* Remove white-space: pre-wrap; as we'll use list items */
+}
+
+#results ul { /* Styling for the list of titles */
+    list-style: none; /* Remove default bullet points */
+    padding: 0;
+    margin: 0;
+}
+
+#results li { /* Styling for each individual title item */
+    background-color: var(--title-item-background);
+    border: 1px solid var(--title-item-border);
+    border-radius: calc(var(--border-radius) - 4px); /* Slightly smaller radius */
+    padding: 12px 18px;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+#results li:last-child {
+    margin-bottom: 0; /* No margin for the last item */
+}
+
+#results li:hover { /* Optional: subtle hover effect */
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+
+#results.error {
+    color: #ff7b7b; 
+    border-color: #ff7b7b;
+    background-color: rgba(255, 123, 123, 0.05); 
+    padding: 25px; /* Keep more padding for error message */
+}
+
+/* Loading Indicator */
+#loadingIndicator.hidden {
+    display: none;
+}
+#loadingIndicator {
+    margin: 20px 0;
+    text-align: center;
+    font-size: 1rem;
+}
