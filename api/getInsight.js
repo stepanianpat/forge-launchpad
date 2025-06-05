@@ -13,10 +13,27 @@ export default async function handler(request, response) {
     }
 
     if (request.method === 'POST') {
-        const { query } = request.body;
+        const { query, generationType, context } = request.body;
 
         if (!query || typeof query !== 'string' || query.trim() === "") {
-            return response.status(400).json({ error: 'Query is missing or invalid in request body.' });
+            return response.status(400).json({ error: 'Query (topic/keywords) is missing or invalid.' });
+        }
+        if (!generationType || (generationType !== 'title' && generationType !== 'description')) {
+            return response.status(400).json({ error: 'Invalid or missing generationType. Must be "title" or "description".' });
+        }
+
+        let systemPromptContent = "";
+        let userPromptContent = query;
+        let maxTokens = 100;
+
+        if (generationType === 'title') {
+            systemPromptContent = "You are an expert SEO Title Architect. Your SOLE task is to generate 3 to 5 compelling, keyword-rich, and SEO-friendly title options based on the user's topic or keywords. Each title MUST be on a new line. Do NOT include any introductory text, explanations, or conversational phrases. Only output the titles.";
+        } else if (generationType === 'description') {
+            systemPromptContent = "You are an expert SEO Meta Description Writer. Your SOLE task is to generate 2-3 concise and compelling meta description options (around 155 characters each) for the given topic/keywords. If additional context (like an existing title) is provided, use it to enhance the descriptions. Each description MUST be on a new line. Do NOT include any introductory text, explanations, or conversational phrases. Only output the descriptions.";
+            maxTokens = 180;
+            if (context && typeof context === 'string' && context.trim() !== "") {
+                userPromptContent = `Topic/Keywords: ${query}\nExisting Title/Focus (for context): ${context.trim()}`;
+            }
         }
 
         try {
@@ -25,14 +42,14 @@ export default async function handler(request, response) {
                 messages: [
                     {
                         role: "system",
-                        content: "You are an SEO Title Generation Bot. Your SOLE task is to generate 3 to 5 SEO title suggestions based on the user's input. Each title MUST be on a new line. Do NOT include any introductory text, explanations, or conversational phrases. Only output the titles."
+                        content: systemPromptContent
                     },
                     {
                         role: "user",
-                        content: query 
+                        content: userPromptContent
                     }
                 ],
-                max_tokens: 100,
+                max_tokens: maxTokens, 
                 temperature: 0.7, 
             });
 
