@@ -3,46 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI SEO Title Architect</title>
+    <title>AI Meta Data Architect</title>
     <link rel="stylesheet" href="assets/css/styles.css">
+    <link id="favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%231e2445%22/><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2260%22 font-family=%22Arial, sans-serif%22 fill=%22%236d59e4%22>MA</text></svg>">
 </head>
 <body>
     <div class="main-container">
         <section class="hero-section">
-            <h1>SEO Title Architect</h1>
-            <p>Forge click-worthy headlines that dominate search results. Unleash AI to craft your perfect SEO titles in seconds!</p>
+            <h1>AI Meta Data Architect</h1>
+            <p>Craft compelling SEO titles and descriptions that captivate audiences and dominate search rankings. Let AI be your guide!</p>
         </section>
 
         <section class="form-card">
-            <label for="userInput">Enter your core topic or keywords:</label>
-            <input type="text" id="userInput" name="userInput" placeholder="e.g., 'sustainable fashion for Gen Z', 'best coffee brewing methods'">
+            <div class="mode-selector">
+                <fieldset>
+                    <legend>Select Generator Mode:</legend>
+                    <input type="radio" id="modeTitle" name="generatorMode" value="title" checked>
+                    <label for="modeTitle">SEO Titles</label>
+
+                    <input type="radio" id="modeDescription" name="generatorMode" value="description">
+                    <label for="modeDescription">SEO Descriptions</label>
+                </fieldset>
+            </div>
+
+            <label for="userInput" class="input-label" id="mainInputLabelEl">Enter your core topic or keywords:</label>
+            <input type="text" id="userInput" name="userInput" placeholder="e.g., 'sustainable fashion for Gen Z'">
             
-            <button id="submitButton" aria-busy="false">Craft My Titles</button> 
+            <label for="userDescriptionInput" class="input-label" id="descriptionInputLabel" style="display: none;">Enter existing title or main focus (optional for context):</label>
+            <textarea id="userDescriptionInput" name="userDescriptionInput" placeholder="e.g., 'Title: Eco-Friendly Fashion Trends for Young Adults'" style="display: none;"></textarea>
+
+            <button id="submitButton" aria-busy="false">Craft Meta Data</button> 
             
-            <div id="loadingIndicator" class="hidden" aria-busy="true">Architecting titles... please wait.</div>
+            <div id="loadingIndicator" class="hidden">
+                <div class="spinner"></div>
+                <span id="loadingText">Architecting... please wait.</span>
+            </div>
         </section>
         
         <section class="results-area">
-            <h3>Your Crafted SEO Titles:</h3>
+            <h3 id="resultsHeading">Your AI-Crafted Meta Data:</h3>
             <div id="results">
+                {/* Results will appear here */}
             </div>
         </section>
     </div>
 
     <script>
         const submitButton = document.getElementById('submitButton');
-        const userInput = document.getElementById('userInput');
+        const userInput = document.getElementById('userInput'); 
+        const userDescriptionInput = document.getElementById('userDescriptionInput'); 
+        const descriptionInputLabel = document.getElementById('descriptionInputLabel');
         const resultsDiv = document.getElementById('results');
         const loadingIndicator = document.getElementById('loadingIndicator');
-        const apiEndpoint = 'https://forge-launchpad.vercel.app/api/getInsight';
+        const loadingText = document.getElementById('loadingText');
+        const resultsHeading = document.getElementById('resultsHeading');
+        const apiEndpoint = 'https://forge-launchpad.vercel.app/api/getInsight'; 
+
+        const modeTitleRadio = document.getElementById('modeTitle');
+        const modeDescriptionRadio = document.getElementById('modeDescription');
+        const mainInputLabelElement = document.getElementById('mainInputLabelEl');
+
+
+        function updateFormForMode() {
+            const selectedMode = document.querySelector('input[name="generatorMode"]:checked').value;
+            if (selectedMode === 'title') {
+                mainInputLabelElement.textContent = 'Enter your core topic or keywords for Title:';
+                userInput.placeholder = "e.g., 'sustainable fashion for Gen Z'";
+                userDescriptionInput.style.display = 'none';
+                descriptionInputLabel.style.display = 'none';
+                submitButton.textContent = 'Craft My Titles';
+                loadingText.textContent = 'Architecting titles... please wait.';
+                resultsHeading.textContent = 'Your AI-Crafted SEO Titles:';
+            } else {
+                mainInputLabelElement.textContent = 'Enter main topic/keywords for Description:';
+                userInput.placeholder = "e.g., 'sustainable fashion impact on environment'";
+                userDescriptionInput.style.display = 'block';
+                descriptionInputLabel.style.display = 'block';
+                submitButton.textContent = 'Craft My Descriptions';
+                loadingText.textContent = 'Architecting descriptions... please wait.';
+                resultsHeading.textContent = 'Your AI-Crafted SEO Descriptions:';
+            }
+            resultsDiv.innerHTML = '';
+        }
+
+        modeTitleRadio.addEventListener('change', updateFormForMode);
+        modeDescriptionRadio.addEventListener('change', updateFormForMode);
+        
+        document.addEventListener('DOMContentLoaded', updateFormForMode);
+
+
+        function copyToClipboard(text, buttonElement) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy'); 
+                buttonElement.textContent = 'Copied!';
+                buttonElement.classList.add('copied');
+                setTimeout(() => {
+                    buttonElement.textContent = 'Copy';
+                    buttonElement.classList.remove('copied');
+                }, 2000); 
+            } catch (err) {
+                console.error('Failed to copy text: ', err);
+                alert('Failed to copy text. Please copy manually.');
+            }
+            document.body.removeChild(textarea);
+        }
 
         submitButton.addEventListener('click', async () => {
-            const query = userInput.value;
-            resultsDiv.innerHTML = '';
+            const mainQuery = userInput.value;
+            const descriptionContext = userDescriptionInput.value; 
+            const selectedMode = document.querySelector('input[name="generatorMode"]:checked').value;
+            
+            resultsDiv.innerHTML = ''; 
             resultsDiv.classList.remove('error'); 
             
-            if (!query.trim()) {
-                resultsDiv.textContent = 'Please enter your topic or keywords to generate titles.';
+            if (!mainQuery.trim()) {
+                resultsDiv.textContent = 'Please enter your core topic or keywords.';
                 return;
             }
             
@@ -50,13 +129,22 @@
             submitButton.disabled = true;
             submitButton.setAttribute('aria-busy', 'true');
 
+            const payload = {
+                query: mainQuery,
+                generationType: selectedMode 
+            };
+
+            if (selectedMode === 'description' && descriptionContext.trim() !== '') {
+                payload.context = descriptionContext; 
+            }
+
             try {
                 const response = await fetch(apiEndpoint, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ query: query }),
+                    body: JSON.stringify(payload),
                 });
 
                 if (response.ok) {
@@ -65,19 +153,31 @@
 
                     try {
                         const data = JSON.parse(responseText);
+                        
                         if (data.message) {
-                            const titles = data.message.split('\n').filter(title => title.trim() !== ''); 
+                            const items = data.message.split('\n').filter(item => item.trim() !== ''); 
 
-                            if (titles.length > 0) {
+                            if (items.length > 0) {
                                 const ul = document.createElement('ul');
-                                titles.forEach(titleText => {
+                                items.forEach(itemText => {
                                     const li = document.createElement('li');
-                                    li.textContent = titleText.trim();
+                                    
+                                    const itemSpan = document.createElement('span');
+                                    itemSpan.textContent = itemText.trim();
+                                    itemSpan.style.flexGrow = "1"; 
+
+                                    const copyBtn = document.createElement('button');
+                                    copyBtn.textContent = 'Copy';
+                                    copyBtn.classList.add('copy-button');
+                                    copyBtn.onclick = () => copyToClipboard(itemText.trim(), copyBtn);
+                                    
+                                    li.appendChild(itemSpan);
+                                    li.appendChild(copyBtn);
                                     ul.appendChild(li);
                                 });
                                 resultsDiv.appendChild(ul);
                             } else {
-                                resultsDiv.textContent = "No titles were generated, or the response was empty.";
+                                resultsDiv.textContent = `No ${selectedMode === 'title' ? 'titles' : 'descriptions'} were generated, or the response was empty.`;
                             }
                         } else {
                              resultsDiv.textContent = "Received an unexpected response format from the AI.";

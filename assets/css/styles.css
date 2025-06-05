@@ -11,9 +11,13 @@
     --input-background: #252a49;
     --input-border: #3b4068;
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-    --results-background-color: #202540; /* Slightly different dark for results */
-    --title-item-background: #2a2f4d; /* Background for individual title items */
-    --title-item-border: #3b4068; /* Border for individual title items */
+    --results-background-color: #202540; 
+    --title-item-background: #2a2f4d; 
+    --title-item-border: #3b4068;
+    --copy-button-background: var(--primary-color);
+    --copy-button-hover-background: var(--primary-hover-color);
+    --copy-button-text-color: white;
+    --copied-message-color: #86e3a0; 
 }
 
 html {
@@ -67,7 +71,7 @@ body {
     color: #a0a0c0; 
     margin-bottom: 30px;
 }
-
+        
 /* Form Card Styling */
 .form-card {
     background-color: var(--card-background-color);
@@ -76,9 +80,65 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     text-align: left; 
     border: 1px solid var(--secondary-color);
+    margin-bottom: 50px;
 }
 
-.form-card label {
+/* Mode Selector Styling */
+.mode-selector {
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.mode-selector fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.mode-selector legend {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: var(--text-color);
+    width: 100%; /* Make legend take full width for centering */
+    text-align: center;
+}
+
+.mode-selector input[type="radio"] {
+    opacity: 0; /* Hide actual radio button */
+    position: fixed;
+    width: 0;
+}
+
+.mode-selector label {
+    display: inline-block;
+    background-color: var(--input-background);
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--input-border);
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.mode-selector input[type="radio"]:checked + label {
+    background-color: var(--primary-color);
+    border-color: var(--primary-hover-color);
+    color: white;
+    box-shadow: 0 0 10px rgba(109, 89, 228, 0.5);
+}
+
+.mode-selector input[type="radio"]:focus + label {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(109, 89, 228, 0.3);
+}
+
+
+.form-card .input-label { /* Renamed to avoid conflict with mode-selector label */
     display: block;
     font-size: 0.9rem;
     font-weight: 500;
@@ -86,7 +146,8 @@ body {
     color: #c0c0e0;
 }
 
-.form-card input[type="text"] {
+.form-card input[type="text"], 
+.form-card textarea { /* Added textarea for descriptions */
     width: 100%;
     padding: 12px 15px;
     margin-bottom: 20px;
@@ -96,9 +157,16 @@ body {
     color: var(--text-color);
     font-size: 1rem;
     box-sizing: border-box; 
+    font-family: var(--font-family); /* Ensure textarea inherits font */
 }
 
-.form-card input[type="text"]:focus {
+.form-card textarea {
+    min-height: 100px; /* Default height for description input */
+    resize: vertical; /* Allow vertical resize */
+}
+        
+.form-card input[type="text"]:focus,
+.form-card textarea:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(109, 89, 228, 0.3);
@@ -141,7 +209,7 @@ body {
 
 #results {
     background-color: var(--results-background-color); 
-    padding: 15px 20px; /* Adjusted padding */
+    padding: 15px 20px;
     border-radius: var(--border-radius);
     border: 1px solid var(--primary-color); 
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1); 
@@ -149,45 +217,83 @@ body {
     font-size: 1rem;
     color: var(--text-color); 
     transition: all 0.3s ease; 
-    /* Remove white-space: pre-wrap; as we'll use list items */
 }
 
-#results ul { /* Styling for the list of titles */
-    list-style: none; /* Remove default bullet points */
+#results ul { 
+    list-style: none; 
     padding: 0;
     margin: 0;
 }
 
-#results li { /* Styling for each individual title item */
+#results li { 
     background-color: var(--title-item-background);
     border: 1px solid var(--title-item-border);
-    border-radius: calc(var(--border-radius) - 4px); /* Slightly smaller radius */
-    padding: 12px 18px;
-    margin-bottom: 10px;
+    border-radius: calc(var(--border-radius) - 2px); 
+    padding: 10px 15px; 
+    margin-bottom: 12px;
     font-size: 0.95rem;
     line-height: 1.6;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    gap: 10px; 
+    opacity: 0; 
+    transform: translateY(10px); 
+    animation: fadeInSlideUp 0.5s ease-out forwards;
 }
 
 #results li:last-child {
-    margin-bottom: 0; /* No margin for the last item */
+    margin-bottom: 0; 
 }
 
-#results li:hover { /* Optional: subtle hover effect */
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+@keyframes fadeInSlideUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
+#results li:nth-child(1) { animation-delay: 0.1s; }
+#results li:nth-child(2) { animation-delay: 0.2s; }
+#results li:nth-child(3) { animation-delay: 0.3s; }
+#results li:nth-child(4) { animation-delay: 0.4s; }
+#results li:nth-child(5) { animation-delay: 0.5s; }
+
+.copy-button {
+    background-color: var(--copy-button-background);
+    color: var(--copy-button-text-color);
+    border: none;
+    border-radius: calc(var(--border-radius) - 4px);
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    white-space: nowrap; 
+}
+
+.copy-button:hover {
+    background-color: var(--copy-button-hover-background);
+    transform: scale(1.05);
+}
+.copy-button:active {
+    transform: scale(0.95);
+}
+
+.copy-button.copied {
+    background-color: var(--copied-message-color);
+    color: var(--background-color); 
+    cursor: default;
+}
 
 #results.error {
     color: #ff7b7b; 
     border-color: #ff7b7b;
     background-color: rgba(255, 123, 123, 0.05); 
-    padding: 25px; /* Keep more padding for error message */
+    padding: 25px; 
 }
 
-/* Loading Indicator */
 #loadingIndicator.hidden {
     display: none;
 }
@@ -195,4 +301,23 @@ body {
     margin: 20px 0;
     text-align: center;
     font-size: 1rem;
+    display: flex; 
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.spinner {
+    width: 32px;
+    height: 32px;
+    border: 4px solid var(--secondary-color);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
